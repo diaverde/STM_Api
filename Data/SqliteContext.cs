@@ -1,13 +1,16 @@
 using System.Data.SQLite;
-using QuestPDF.Fluent;
-using QuestPDF.Infrastructure;
+using StmApi.Data;
 
 namespace StmApi
 {
-    class DBConnection
+    class SqliteContext : IDbContext
     {
-        const string connectionString = "Data Source=stmDB.sqlite;Version=3;New=True;Compress=True;";
-        public SQLiteConnection sqlite_conn {get; set;} = new SQLiteConnection(connectionString);
+        private SQLiteConnection sqlite_conn;
+
+        public SqliteContext(string connectionString)
+        {
+            sqlite_conn = new SQLiteConnection(connectionString);
+        }
         public void OpenConnection()
         {
             try
@@ -198,89 +201,6 @@ namespace StmApi
                     routeTrips.Add(trip);
                 }
             }
-        }
-    }
-
-    public interface IStmService
-    {
-        List<Service> GetServices();
-        List<Route> GetRoutes();
-        
-        Route? GetRoute(int id);
-
-        List<CustomTrip> GetRouteTrips(int routeId, string day, string direction, bool limit);
-
-        Stream GetRoutePdf(int routeId, string day, string direction);
-    }
-
-    public class StmService : IStmService
-    {
-        private readonly DBConnection _dBConnection;
-
-        public StmService()
-        {
-            _dBConnection = new DBConnection();
-        }
-
-        public List<Service> GetServices()
-        {
-            _dBConnection.OpenConnection();
-            List<Service> services = _dBConnection.GetServices();
-            _dBConnection.CloseConnection();
-            
-            return services;
-        }
-
-        public List<Route> GetRoutes()
-        {
-            _dBConnection.OpenConnection();
-            List<Route> routes = _dBConnection.GetRoutes();
-            _dBConnection.CloseConnection();
-            
-            return routes;
-        }
-
-        public Route? GetRoute(int id)
-        {
-            _dBConnection.OpenConnection();
-            Route? route = _dBConnection.GetRoute(id);
-            _dBConnection.CloseConnection();
-            
-            return route;
-        }
-
-        public List<CustomTrip> GetRouteTrips(int routeId, string day, string direction, bool limit)
-        {
-            _dBConnection.OpenConnection();
-            List<CustomTrip> trips = _dBConnection.GetRouteTrips(routeId, day, direction, limit);
-            _dBConnection.CloseConnection();
-            
-            return trips;
-        }
-
-        public Stream GetRoutePdf(int routeId, string day, string direction)
-        {
-            /*
-            QuestPDF.Settings.License = LicenseType.Community;
-            var invoice = InvoiceDocumentDataSource.GetInvoiceDetails();
-            var document = new InvoiceDocument(invoice);
-            document.GeneratePdfAndShow();
-            //document.GeneratePdf("invoice.pdf");
-            */
-            _dBConnection.OpenConnection();
-            List<CustomTrip> trips = _dBConnection.GetRouteTrips(routeId, day, direction, false);
-            _dBConnection.CloseConnection();
-
-            QuestPDF.Settings.License = LicenseType.Community;
-            var document = new RouteDocument(trips);
-            //document.GeneratePdfAndShow();
-
-            string fileName = $"{routeId}-{day}-{direction}.pdf";
-            string filePath = Path.Combine("Files", fileName);
-            using var stream = new FileStream(filePath, FileMode.Create);
-            document.GeneratePdf(stream);
-
-            return stream;
         }
     }
 }

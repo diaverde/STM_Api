@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Mvc;
-using StmApi;
+using StmApi.Services;
 using Route = StmApi.Route;
 
 var builder = WebApplication.CreateBuilder(args);
