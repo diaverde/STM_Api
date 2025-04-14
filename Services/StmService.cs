@@ -12,11 +12,12 @@ public class StmService : IStmService
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json")
+            .AddEnvironmentVariables()
             .Build();
 
         string connectionString = configuration.GetConnectionString("DefaultConnection");
-        _dbContext = new SqliteContext(connectionString);
-        //_dbContext = new SqlServerContext();
+        //_dbContext = new SqliteContext(connectionString);
+        _dbContext = new SqlServerContext(connectionString);
     }
 
     public List<Service> GetServices()

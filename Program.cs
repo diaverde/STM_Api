@@ -19,6 +19,14 @@ builder.Services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
 
 var app = builder.Build();
 
+// Ensure "Files" folder exists
+var filesDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Files");
+if (!Directory.Exists(filesDirectory))
+{
+    Directory.CreateDirectory(filesDirectory);
+    //Console.WriteLine($"Created directory: {filesDirectory}");
+}
+
 // Configure exception middleware
 app.UseStatusCodePages(async statusCodeContext
     => await Results.Problem(statusCode: statusCodeContext.HttpContext.Response.StatusCode)
@@ -101,16 +109,21 @@ app.MapGet("/pdf/{id}", (
 
         if (!File.Exists(filePath))
         {
+            Console.WriteLine($"File {filePath} does not exist, generating PDF.");
             var file = stmService.GetRoutePdf(id, day ?? "S", direction ?? "0");
+            Console.WriteLine($"PDF generated: {fileName}");
         }
 
         if (!File.Exists(filePath))
         {
+            Console.WriteLine($"File {filePath} does not exist.");
             return Results.NotFound("File not found.");
         }
         else
         {
+            Console.WriteLine($"File {filePath} exists.");
             var fileBytes = File.ReadAllBytes(filePath);
+            Console.WriteLine($"File {filePath} read successfully.");
             return Results.File(fileBytes, mimeType, fileName);
         }
     })

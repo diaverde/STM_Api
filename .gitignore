@@ -1,3 +1,5 @@
 stmDB.sqlite
 bin/
 obj/
+.vscode/
+Files/*

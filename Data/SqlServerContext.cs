@@ -96,8 +96,8 @@ namespace StmApi
             SqlDataReader dataReader;
             SqlCommand cmd;
             cmd = db_conn.CreateCommand();
-            cmd.CommandText = "SELECT route_id,agency_id,route_short_name,route_long_name,route_type,route_url,route_color,route_text_color FROM routes WHERE route_id = $id;";
-            cmd.Parameters.AddWithValue("$id", id);
+            cmd.CommandText = "SELECT route_id,agency_id,route_short_name,route_long_name,route_type,route_url,route_color,route_text_color FROM routes WHERE route_id = @id;";
+            cmd.Parameters.AddWithValue("@id", id);
 
             dataReader = cmd.ExecuteReader();
             while (dataReader.Read())
@@ -125,49 +125,44 @@ namespace StmApi
             List<CustomTrip> routeTrips = new List<CustomTrip>();
             string sortSuffix = "ORDER BY st.departure_time, st.stop_sequence;";
             string limitPrefix = "SELECT ";
-            if (limit)
-            {
-                limitPrefix += "TOP 1 ";
-                sortSuffix = "ORDER BY st.departure_time ASC, st.stop_sequence ASC;";
-            }
-
-            readData();
-
-            if (limit)
-            {
-                sortSuffix = "ORDER BY st.departure_time DESC, st.stop_sequence DESC;";
-                readData();
-            }
-
-            return routeTrips;
-
-            // Helper
-            void readData() 
-            {
-                string sqlStatement = limitPrefix
-                + "t.route_id, t.service_id, t.trip_id, t.trip_headsign, t.direction_id, t.shape_id, "
+            string sqlStatementFields = "t.route_id, t.service_id, t.trip_id, t.trip_headsign, t.direction_id, "
                 + "r.route_short_name, r.route_long_name, r.route_type, "
                 + "st.arrival_time, st.departure_time, st.stop_id, st.stop_sequence, "
                 + "s.stop_name, s.stop_lat, s.stop_lon, s.location_type, s.parent_station "
                 + "FROM trips AS t, routes AS r, stop_times AS st, stops AS s, services AS ser "
-                + "WHERE t.route_id = $route_id "
-                + "AND $today BETWEEN ser.start_date AND ser.end_date "
+                + "WHERE t.route_id = @route_id "
+                + "AND @today BETWEEN ser.start_date AND ser.end_date "
                 + "AND t.service_id = ser.service_id "
-                + "AND t.service_id LIKE $week_day "
-                + "AND t.direction_id = $direction "
+                + "AND t.service_id LIKE @week_day "
+                + "AND t.direction_id = @direction "
                 + "AND t.route_id = r.route_id "
                 + "AND t.trip_id = st.trip_id "
-                + "AND st.stop_id = s.stop_id "
-                + sortSuffix;
+                + "AND st.stop_id = s.stop_id ";
+            string sqlStatement = limitPrefix + sqlStatementFields + sortSuffix;
+            
+            if (limit)
+            {
+                limitPrefix = "SELECT * FROM (SELECT TOP 1 ";
+                sortSuffix = "ORDER BY st.departure_time ASC, st.stop_sequence ASC) AS t1 ";
+                sqlStatement = limitPrefix + sqlStatementFields + sortSuffix;
+                sortSuffix = "ORDER BY st.departure_time DESC, st.stop_sequence DESC) AS t2;";
+                sqlStatement += " UNION ALL " + limitPrefix + sqlStatementFields + sortSuffix;
+            }
 
+            readData(sqlStatement);
+            return routeTrips;
+
+            // Helper
+            void readData(string sqlStatement) 
+            {
                 SqlDataReader dataReader;
                 SqlCommand cmd;
                 cmd = db_conn.CreateCommand();
                 cmd.CommandText = sqlStatement;
-                cmd.Parameters.AddWithValue("$route_id", id);
-                cmd.Parameters.AddWithValue("$week_day", $"%-{day}");
-                cmd.Parameters.AddWithValue("$direction", direction);
-                cmd.Parameters.AddWithValue("$today", today);
+                cmd.Parameters.AddWithValue("@route_id", id);
+                cmd.Parameters.AddWithValue("@week_day", $"%-{day}");
+                cmd.Parameters.AddWithValue("@direction", direction);
+                cmd.Parameters.AddWithValue("@today", today);
 
                 dataReader = cmd.ExecuteReader();
                 while (dataReader.Read())
@@ -179,19 +174,18 @@ namespace StmApi
                         TripId = dataReader.GetInt32(2),
                         TripHeadsign = dataReader.GetString(3),
                         Direction = dataReader.GetString(4),
-                        ShapeId = dataReader.GetInt32(5),
-                        RouteShortName = dataReader.GetString(6),
-                        RouteLongName = dataReader.GetString(7),
-                        RouteType = dataReader.GetString(8),
-                        ArrivalTime = dataReader.GetString(9),
-                        DepartureTime = dataReader.GetString(10),
-                        StopId = dataReader.GetString(11),
-                        StopSequence = dataReader.GetInt32(12),
-                        StopName = dataReader.GetString(13),
-                        Latitude = dataReader.GetString(14),
-                        Longitude = dataReader.GetString(15),
-                        LocationType = dataReader.GetString(16),
-                        ParentStation = dataReader.GetString(17)
+                        RouteShortName = dataReader.GetString(5),
+                        RouteLongName = dataReader.GetString(6),
+                        RouteType = dataReader.GetString(7),
+                        ArrivalTime = dataReader.GetString(8),
+                        DepartureTime = dataReader.GetString(9),
+                        StopId = dataReader.GetString(10),
+                        StopSequence = dataReader.GetInt32(11),
+                        StopName = dataReader.GetString(12),
+                        Latitude = dataReader.GetString(13),
+                        Longitude = dataReader.GetString(14),
+                        LocationType = dataReader.GetString(15),
+                        ParentStation = dataReader.GetString(16)
                     };
 
                     int secondsSeparatorIndex = trip.DepartureTime.LastIndexOf(':');
