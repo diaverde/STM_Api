@@ -72,7 +72,7 @@ namespace StmApi
             {
                 Route route = new Route
                 {
-                    Id = sqlite_datareader.GetInt32(0),
+                    Id = sqlite_datareader.GetInt16(0),
                     AgencyId = sqlite_datareader.GetString(1),
                     ShortName = sqlite_datareader.GetString(2),
                     LongName = sqlite_datareader.GetString(3),
@@ -101,7 +101,7 @@ namespace StmApi
             {
                 route = new Route
                 {
-                    Id = sqlite_datareader.GetInt32(0),
+                    Id = sqlite_datareader.GetInt16(0),
                     AgencyId = sqlite_datareader.GetString(1),
                     ShortName = sqlite_datareader.GetString(2),
                     LongName = sqlite_datareader.GetString(3),
@@ -168,7 +168,7 @@ namespace StmApi
                 {
                     CustomTrip trip = new CustomTrip
                     {
-                        RouteId = sqlite_datareader.GetInt32(0),
+                        RouteId = sqlite_datareader.GetInt16(0),
                         ServiceId = sqlite_datareader.GetString(1),
                         TripId = sqlite_datareader.GetInt32(2),
                         TripHeadsign = sqlite_datareader.GetString(3),
@@ -180,7 +180,7 @@ namespace StmApi
                         ArrivalTime = sqlite_datareader.GetString(9),
                         DepartureTime = sqlite_datareader.GetString(10),
                         StopId = sqlite_datareader.GetString(11),
-                        StopSequence = sqlite_datareader.GetInt32(12),
+                        StopSequence = sqlite_datareader.GetInt16(12),
                         StopName = sqlite_datareader.GetString(13),
                         Latitude = sqlite_datareader.GetString(14),
                         Longitude = sqlite_datareader.GetString(15),

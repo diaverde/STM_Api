@@ -75,7 +75,7 @@ namespace StmApi
             {
                 Route route = new Route
                 {
-                    Id = dataReader.GetInt32(0),
+                    Id = dataReader.GetInt16(0),
                     AgencyId = dataReader.GetString(1),
                     ShortName = dataReader.GetString(2),
                     LongName = dataReader.GetString(3),
@@ -104,7 +104,7 @@ namespace StmApi
             {
                 route = new Route
                 {
-                    Id = dataReader.GetInt32(0),
+                    Id = dataReader.GetInt16(0),
                     AgencyId = dataReader.GetString(1),
                     ShortName = dataReader.GetString(2),
                     LongName = dataReader.GetString(3),
@@ -169,7 +169,7 @@ namespace StmApi
                 {
                     CustomTrip trip = new CustomTrip
                     {
-                        RouteId = dataReader.GetInt32(0),
+                        RouteId = dataReader.GetInt16(0),
                         ServiceId = dataReader.GetString(1),
                         TripId = dataReader.GetInt32(2),
                         TripHeadsign = dataReader.GetString(3),
@@ -180,12 +180,12 @@ namespace StmApi
                         ArrivalTime = dataReader.GetString(8),
                         DepartureTime = dataReader.GetString(9),
                         StopId = dataReader.GetString(10),
-                        StopSequence = dataReader.GetInt32(11),
+                        StopSequence = dataReader.GetInt16(11),
                         StopName = dataReader.GetString(12),
                         Latitude = dataReader.GetString(13),
                         Longitude = dataReader.GetString(14),
                         LocationType = dataReader.GetString(15),
-                        ParentStation = dataReader.GetString(16)
+                        ParentStation = dataReader.IsDBNull(16) ? null : dataReader.GetString(16)
                     };
 
                     int secondsSeparatorIndex = trip.DepartureTime.LastIndexOf(':');
