@@ -3,7 +3,8 @@ import csv, sqlite3, os
 PYTHON_SCRIPT_DIR = 'stm-python'
 STM_DIR = 'gtfs_stm'
 
-con = sqlite3.connect("../stmDB.sqlite")
+#con = sqlite3.connect("../stmDB.sqlite")
+con = sqlite3.connect("stmDB.sqlite") # When deploying
 cur = con.cursor()
 
 # Routes
@@ -91,6 +92,9 @@ with open(file_path,'r') as fin:
     stop_times_db = [(int(i['trip_id']),i['arrival_time'],i['departure_time'],i['stop_id'],int(i['stop_sequence'])) for i in dr]
     
 cur.executemany("INSERT INTO stop_times (trip_id,arrival_time,departure_time,stop_id,stop_sequence) VALUES (?, ?, ?, ?, ?);", stop_times_db)
+
+print("Data loaded successfully into the SQLite database.")
+print(f"The path to the database is: {os.path.abspath('../stmDB.sqlite')}")
 
 con.commit()
 con.close()
