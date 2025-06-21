@@ -1,4 +1,4 @@
-stmDB.sqlite
+*.sqlite
 bin/
 obj/
 .vscode/

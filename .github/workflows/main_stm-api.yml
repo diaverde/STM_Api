@@ -38,6 +38,11 @@ jobs:
       - name: dotnet publish
         run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
 
+      # Include DB in the artifact
+      - name: Move SQLite database to output directory
+        run: |
+          mv stmDB.sqlite "${{env.DOTNET_ROOT}}/myapp/stmDB.sqlite"
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
