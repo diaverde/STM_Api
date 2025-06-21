@@ -18,30 +18,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python 
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.12'
-
-      # Run Python script in the stm-python folder
-      - name: Run Python script
-        run: python3 ./stm-python/stmDataToSqlite.py
-
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.x'
+          dotnet-version: 'v8.0'
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
-      - name: Dotnet publish
+      - name: dotnet publish
         run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
-
-      # Include DB in the artifact
-      - name: Move SQLite database to output directory
-        run: |
-          mv stmDB.sqlite "${{env.DOTNET_ROOT}}/myapp/stmDB.sqlite"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -55,23 +41,13 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
-
+    
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: .net-app
       
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_F3C4C55EB62749049F3D199F1A6E98B9 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_3C7ED4CCB0B84A9F8928276E038BC60C }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_14A56C9D262745E5BC7020D787D26DE0 }}
-
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
@@ -79,4 +55,4 @@ jobs:
           app-name: 'stm-api'
           slot-name: 'Production'
           package: .
-          
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_EB2F1635A9344F17949079348DA48147 }}
