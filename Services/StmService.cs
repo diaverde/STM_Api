@@ -16,8 +16,8 @@ public class StmService : IStmService
             .Build();
 
         string connectionString = configuration.GetConnectionString("DefaultConnection");
-        //_dbContext = new SqliteContext(connectionString);
-        _dbContext = new SqlServerContext(connectionString);
+        _dbContext = new SqliteContext(connectionString);
+        //_dbContext = new SqlServerContext(connectionString);
     }
 
     public List<Service> GetServices()

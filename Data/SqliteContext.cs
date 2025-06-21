@@ -142,7 +142,8 @@ namespace StmApi
                 string sqlStatement = "SELECT t.route_id, t.service_id, t.trip_id, t.trip_headsign, t.direction_id, t.shape_id, "
                 + "r.route_short_name, r.route_long_name, r.route_type, "
                 + "st.arrival_time, st.departure_time, st.stop_id, st.stop_sequence, "
-                + "s.stop_name, s.stop_lat, s.stop_lon, s.location_type, s.parent_station "
+                + "s.stop_name, s.stop_lat, s.stop_lon, s.location_type, s.parent_station, "
+                + "ser.start_date, ser.end_date "
                 + "FROM trips AS t, routes AS r, stop_times AS st, stops AS s, services AS ser "
                 + "WHERE t.route_id = $route_id "
                 + "AND $today BETWEEN ser.start_date AND ser.end_date "
@@ -185,7 +186,9 @@ namespace StmApi
                         Latitude = sqlite_datareader.GetString(14),
                         Longitude = sqlite_datareader.GetString(15),
                         LocationType = sqlite_datareader.GetString(16),
-                        ParentStation = sqlite_datareader.GetString(17)
+                        ParentStation = sqlite_datareader.GetString(17),
+                        StartDate = sqlite_datareader.GetString(18),
+                        EndDate = sqlite_datareader.GetString(19)
                     };
 
                     int secondsSeparatorIndex = trip.DepartureTime.LastIndexOf(':');

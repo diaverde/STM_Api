@@ -128,7 +128,8 @@ namespace StmApi
             string sqlStatementFields = "t.route_id, t.service_id, t.trip_id, t.trip_headsign, t.direction_id, "
                 + "r.route_short_name, r.route_long_name, r.route_type, "
                 + "st.arrival_time, st.departure_time, st.stop_id, st.stop_sequence, "
-                + "s.stop_name, s.stop_lat, s.stop_lon, s.location_type, s.parent_station "
+                + "s.stop_name, s.stop_lat, s.stop_lon, s.location_type, s.parent_station, "
+                + "ser.start_date, ser.end_date "
                 + "FROM trips AS t, routes AS r, stop_times AS st, stops AS s, services AS ser "
                 + "WHERE t.route_id = @route_id "
                 + "AND @today BETWEEN ser.start_date AND ser.end_date "
@@ -185,7 +186,10 @@ namespace StmApi
                         Latitude = dataReader.GetString(13),
                         Longitude = dataReader.GetString(14),
                         LocationType = dataReader.GetString(15),
-                        ParentStation = dataReader.IsDBNull(16) ? null : dataReader.GetString(16)
+                        ParentStation = dataReader.IsDBNull(16) ? null : dataReader.GetString(16),
+                        StartDate = dataReader.GetString(17),
+                        EndDate = dataReader.GetString(18)
+
                     };
 
                     int secondsSeparatorIndex = trip.DepartureTime.LastIndexOf(':');

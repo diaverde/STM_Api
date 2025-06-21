@@ -13,7 +13,7 @@ builder.Services.AddSingleton<IStmService, StmService>();
 builder.Services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
 {
     builder.AllowAnyOrigin()
-        .AllowAnyMethod()
+       .AllowAnyMethod()
        .AllowAnyHeader();
 }));
 
